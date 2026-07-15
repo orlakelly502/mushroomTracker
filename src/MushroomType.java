@@ -1,4 +1,5 @@
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class MushroomType {
     }
 
     // creating many
-    public static ArrayList<MushroomType> fromResultSetGroup(ResultSet rs, Scanner ip) throws SQLException {
+    public static ArrayList<MushroomType> fromResultSetGroup(ResultSet rs) throws SQLException {
         ArrayList<MushroomType> types = new ArrayList<>();
 
         while (rs.next()) {
@@ -50,4 +51,45 @@ public class MushroomType {
     }
 
 
+    public static ArrayList<MushroomType> getAllTypes(DBConnect conn) throws SQLException {
+        String sql = "SELECT * FROM mushroom_type";
+
+        try(PreparedStatement ps = conn.getConnection().prepareStatement(sql)){
+            ResultSet rs = ps.executeQuery(sql);
+            ArrayList<MushroomType> allShrooms = fromResultSetGroup(rs);
+            return allShrooms;
+        }
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public int getMushroomTypeId() {
+        return mushroomTypeId;
+    }
+
+    public String getScientificName() {
+        return scientificName;
+    }
+
+    public double getTempMin() {
+        return tempMin;
+    }
+
+    public double getTempMax() {
+        return tempMax;
+    }
+
+    public double getHumidityMin() {
+        return humidityMin;
+    }
+
+    public double getHumidityMax() {
+        return humidityMax;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 } // class end

@@ -1,3 +1,18 @@
-public class Main {
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-}
+public class Main {
+    public static void main(String[] args) {
+        Scanner ip = new Scanner(System.in);
+
+
+        try (DBConnect conn = new DBConnect("devuser", "12QWaszxc")) {
+            MushApp mApp = new MushApp(ip, conn);
+            mApp.makeNewColony();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}// class end

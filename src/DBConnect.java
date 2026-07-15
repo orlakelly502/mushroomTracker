@@ -1,5 +1,5 @@
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
+
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
