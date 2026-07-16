@@ -29,7 +29,7 @@ public class MushroomType {
         this.description = desc;
     }
 
-    // creating many
+    // processes/hyrdates the result set into an ArrayList of Objects
     public static ArrayList<MushroomType> fromResultSetGroup(ResultSet rs) throws SQLException {
         ArrayList<MushroomType> types = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class MushroomType {
         return types;
     }
 
-
+    // querying DB for all mushroomsTypes available - passing rs to fromResultSetGroup to have it processed into an Array before returning
     public static ArrayList<MushroomType> getAllTypes(DBConnect conn) throws SQLException {
         String sql = "SELECT * FROM mushroom_type";
 
@@ -60,6 +60,8 @@ public class MushroomType {
             return allShrooms;
         }
     }
+
+    // getter dump
 
     public String getCommonName() {
         return commonName;

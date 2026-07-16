@@ -95,31 +95,5 @@ public class Colony {
     }
 
 
-    public int getMushroomTypeId() {
-        return mushroomTypeId;
-    }
 
-    public int getColonyId() {
-        return colonyId;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public Scanner getIp() {
-        return ip;
-    }
 } // class end

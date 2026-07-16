@@ -34,3 +34,4 @@ bin/
 .idea/vcs.xml
 .idea/workspace.xml
 mushroomTracker.iml
+.idea/libraries/gson_2_14_0.xml
