@@ -9,9 +9,8 @@ public class Main {
 
         try (DBConnect conn = new DBConnect("devuser", "12QWaszxc")) {
             MushApp mApp = new MushApp(ip, conn);
-            mApp.makeNewColony();
-
-        } catch (SQLException e) {
+            mApp.run();
+        } catch (SQLException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

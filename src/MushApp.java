@@ -1,30 +1,39 @@
 import com.mysql.cj.protocol.Resultset;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import com.google.gson.Gson;
 
 // Collection Manager kinda?
 
 public class MushApp {
     Scanner ip;
     DBConnect conn;
+    MushClient client;
+    Gson gson = new Gson();
+
     ArrayList<Colony> colonies = new ArrayList<>();
     ArrayList<MushroomType> types = new ArrayList<>();
+
 
     public MushApp(Scanner ip, DBConnect conn) throws SQLException {
         this.ip = ip;
         this.conn = conn;
         this.types = MushroomType.getAllTypes(conn);
+        this.client = new MushClient();
     }
 
 
     // creates object - adds to colonies array -> calls to colony method -> inserts new colony into DB
     // retrieves auto generated key - updates new colony objects ID to match the auto generated one
     // no 'orphaned' colony objects can be created thanks to this chain
+
 
     public void makeNewColony() throws SQLException {
         boolean makingSelection = true;
@@ -62,6 +71,29 @@ public class MushApp {
         for(MushroomType mushroom : types){
             System.out.println(i + ". " + mushroom.getCommonName());
             i++;
+        }
+    }
+
+    public void parseResponse(HttpResponse<String> response){
+        String responseBody = response.body();
+        if(responseBody.equals("503")){
+            System.out.println("No Reading available");
+        }else{
+            SensorReading reading = gson.fromJson(response.body(), RawSensorData.class);
+        }
+    }
+
+    public void run() throws InterruptedException {
+        boolean running = true;
+
+        while(running){
+            try{
+                System.out.println(client.sendRequest());
+                Thread.sleep(10000);
+
+            }catch(IOException e){
+                System.out.println(" Pi's Flask server isn't running or the  network's down");
+            }
         }
     }
 }
