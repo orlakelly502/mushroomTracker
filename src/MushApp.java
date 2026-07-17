@@ -17,6 +17,7 @@ public class MushApp {
     DBConnect conn;
     MushClient client;
     Gson gson = new Gson();
+    Colony activeColony;
 
     ArrayList<Colony> colonies = new ArrayList<>();
     ArrayList<MushroomType> types = new ArrayList<>();
@@ -74,13 +75,36 @@ public class MushApp {
         }
     }
 
+    public void setActiveColony(int id){
+        Colony col = findColonyById(id);
+        if(col != null){
+            this.activeColony = col;
+        }else{
+            System.out.println("No Colony with that ID was found, you can create a new one or try again with another ID");
+        }
+    }
+
+    public Colony findColonyById(int id){
+        for(Colony colony : colonies){
+            if(colony.getColonyId() == id){
+                return colony;
+            }
+        }
+        return null;
+    }
+
     public void parseResponse(HttpResponse<String> response){
         String responseBody = response.body();
+        System.out.println(responseBody);
         if(responseBody.equals("503")){
             System.out.println("No Reading available");
         }else{
-            SensorReading reading = gson.fromJson(response.body(), RawSensorData.class);
+            RawSensorData reading = gson.fromJson(response.body(), RawSensorData.class);
         }
+    }
+
+    public Colony getActiveColony() {
+        return activeColony;
     }
 
     public void run() throws InterruptedException {
@@ -88,7 +112,9 @@ public class MushApp {
 
         while(running){
             try{
-                System.out.println(client.sendRequest());
+                HttpResponse<String> response = client.sendRequest();
+                parseResponse(response);
+
                 Thread.sleep(10000);
 
             }catch(IOException e){

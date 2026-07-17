@@ -95,5 +95,7 @@ public class Colony {
     }
 
 
-
+    public int getColonyId() {
+        return colonyId;
+    }
 } // class end
