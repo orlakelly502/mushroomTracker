@@ -111,18 +111,36 @@ public class MushApp {
         return activeColony;
     }
 
+    public void printMainMenu(){
+        System.out.println("""
+                Please make a selection from the menu below:
+                1.Create New Colony
+                2.Set active Colony (NOTE: All incoming sensor readings are automatically associated with active colony).
+                3.View Dashboard
+                4.Create a new Flush
+                """);
+    }
 
     // main application loop
-    public void run() throws InterruptedException {
+    public void run() throws InterruptedException, IOException {
         boolean running = true;
+
+        // temporarily auto opening dashboard on launch
+        OpenDashboard.launchDashboard();
+        printMainMenu();
 
         while(running){
             try{
                 // sending the request for data and retrieving it's been handled
                 HttpResponse<String> response = client.sendRequest();
+
+                // check Response is valid for GSON parsing - returns valid object if it is
                 RawSensorData newReading = checkResponse(response);
-                newReading.setColonyId(1);
+
                 // GSON does not use classes constructor so need to set ID manually - uses reflection
+                newReading.setColonyId(1);
+
+                // writing new sensor record to the DB
                 newReading.rawSensorReadingToDb(conn.getConnection());
 
                 Thread.sleep(10000);
