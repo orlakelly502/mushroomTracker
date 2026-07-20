@@ -23,7 +23,7 @@ public class SensorReading {
         this.ip = ip;
     }
 
-    // creating many
+    // creating reading objects from DB entries
     public static ArrayList<SensorReading> fromResultSetGroup(ResultSet rs, Scanner ip) throws SQLException {
         ArrayList<SensorReading> readings = new ArrayList<>();
 

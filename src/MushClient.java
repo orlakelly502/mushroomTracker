@@ -14,6 +14,7 @@ public class MushClient {
         client = HttpClient.newBuilder().build();
     }
 
+    // uses the client to send a request to the pi for sensor data
     public HttpResponse<String> sendRequest() throws IOException, InterruptedException {
         request = HttpRequest.newBuilder().uri(URI.create("http://192.168.50.240:5000/reading")).build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());

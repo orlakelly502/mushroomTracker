@@ -34,8 +34,6 @@ public class MushApp {
     // creates object - adds to colonies array -> calls to colony method -> inserts new colony into DB
     // retrieves auto generated key - updates new colony objects ID to match the auto generated one
     // no 'orphaned' colony objects can be created thanks to this chain
-
-
     public void makeNewColony() throws SQLException {
         boolean makingSelection = true;
 
@@ -75,6 +73,7 @@ public class MushApp {
         }
     }
 
+    // allows users to select and active colony that sensor data belongs to
     public void setActiveColony(int id){
         Colony col = findColonyById(id);
         if(col != null){
@@ -84,6 +83,7 @@ public class MushApp {
         }
     }
 
+    // search hydrated colonies Array for existing colony that matches passed id
     public Colony findColonyById(int id){
         for(Colony colony : colonies){
             if(colony.getColonyId() == id){
@@ -93,13 +93,17 @@ public class MushApp {
         return null;
     }
 
-    public void parseResponse(HttpResponse<String> response){
+    // checks client request response - checks the body for error codes to prevent exceptions before 'translating' it
+    // into an object using GSON - maybe to many responsibilities in this function could do with splitting later
+    public RawSensorData checkResponse(HttpResponse<String> response){
         String responseBody = response.body();
         System.out.println(responseBody);
         if(responseBody.equals("503")){
             System.out.println("No Reading available");
+            return null;
         }else{
             RawSensorData reading = gson.fromJson(response.body(), RawSensorData.class);
+            return reading;
         }
     }
 
@@ -107,18 +111,26 @@ public class MushApp {
         return activeColony;
     }
 
+
+    // main application loop
     public void run() throws InterruptedException {
         boolean running = true;
 
         while(running){
             try{
+                // sending the request for data and retrieving it's been handled
                 HttpResponse<String> response = client.sendRequest();
-                parseResponse(response);
+                RawSensorData newReading = checkResponse(response);
+                newReading.setColonyId(1);
+                // GSON does not use classes constructor so need to set ID manually - uses reflection
+                newReading.rawSensorReadingToDb(conn.getConnection());
 
                 Thread.sleep(10000);
 
             }catch(IOException e){
                 System.out.println(" Pi's Flask server isn't running or the  network's down");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
     }
