@@ -24,20 +24,5 @@ public class RawSensorData {
             addSensorReading.executeUpdate();
         }
     }
-
-    public int getColonyId() {
-        return colonyId;
-    }
-
-    public double getTemperature() {
-        return temperature;
-    }
-
-    public double getHumidity() {
-        return humidity;
-    }
-
-    public void setColonyId(int colonyId) {
-        this.colonyId = colonyId;
-    }
 }
+// need update to take ActiveColony ID which is retrived from activeColony sotred in MushApp (has a getter of getID)
