@@ -12,7 +12,8 @@ public class MushApp {
     DBConnect conn;
     MushClient client;
     Gson gson = new Gson();
-    Colony activeColony;
+    volatile Colony activeColony;
+    // volatile indicates this value can be changed by different threads ensures that changes made via menuThread are visible to pollingThread
     volatile boolean running;
 
     ArrayList<Colony> colonies = new ArrayList<>();
@@ -132,7 +133,7 @@ public class MushApp {
 
                 try {
                     if(getActiveColony() == null){
-                        System.out.println("No Active Colony");
+                        System.out.print("No Active Colony found: Please SET and active colony or CREATE a new one from the main menu.");
                         Thread.sleep(10000);
                         continue;
 
@@ -144,7 +145,7 @@ public class MushApp {
                     RawSensorData newReading = checkResponse(response);
 
                     // GSON does not use classes constructor so need to set ID manually - uses reflection
-                    newReading.setColonyId(1);
+                    newReading.setColonyId(activeColony.getColonyId());
 
                     // writing new sensor record to the DB
                     newReading.rawSensorReadingToDb(conn.getConnection());

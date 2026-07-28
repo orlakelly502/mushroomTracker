@@ -12,7 +12,7 @@ public class RawSensorData {
         this.humidity = humidity;
         // temporarily hard coding for testing purposes - need to change this later on when i've established my
         // active colony tracking
-        this.colonyId = 1;
+        this.colonyId = colonyId;
     }
     public void rawSensorReadingToDb(Connection conn) throws SQLException {
         String insertReading ="INSERT INTO sensor_reading(colony_id, temperature, humidity) VALUES (?, ?, ?)";
@@ -24,5 +24,9 @@ public class RawSensorData {
             addSensorReading.executeUpdate();
         }
     }
+
+    // takes in active colony ID to be used as FK link for valid INSERT
+    public void setColonyId(int id){
+        this.colonyId = id;
+    }
 }
-// need update to take ActiveColony ID which is retrived from activeColony sotred in MushApp (has a getter of getID)
