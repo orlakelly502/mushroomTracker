@@ -10,6 +10,13 @@ public class Main {
         try (DBConnect conn = new DBConnect("devuser", "12QWaszxc")) {
             MushApp mApp = new MushApp(ip, conn);
 
+            // move preloads to main to ensure exising colonies are preloaded before threads try working with them
+            ArrayList<Colony> preexistingCols = Colony.fromResultSetGroup(conn, ip);
+            mApp.setColonies(preexistingCols);
+
+            // on launch check if there is a saved active colony from a previous session & restore it
+            mApp.restoreActiveColony();
+
             // Constructor call for Thread creates a Runnable - implementing Runnable single abstract method void run()
             // run has NO throws clause so methods using this thread cannot throw their errors further up to chain and
             // instead need to handle them themselves.
@@ -18,8 +25,14 @@ public class Main {
 
             // .start spins up new threads .run() just runs on current thread
             pollingThread.start();
+            // blocks main thread keeping DB connection open until program ends as try with resources block remains open
+            // - this blocks the caller (main thread) not any other threads (polling & menu thread)will keep running.
             menuThread.start();
+            pollingThread.join();
+            menuThread.join();
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

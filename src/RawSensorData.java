@@ -10,8 +10,6 @@ public class RawSensorData {
     public RawSensorData(double temperature, double humidity, int colonyId){
         this.temperature = temperature;
         this.humidity = humidity;
-        // temporarily hard coding for testing purposes - need to change this later on when i've established my
-        // active colony tracking
         this.colonyId = colonyId;
     }
     public void rawSensorReadingToDb(Connection conn) throws SQLException {

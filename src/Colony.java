@@ -25,8 +25,13 @@ public class Colony {
 
     // factory method for creating  several Colony objects from DB data
 
-    public static ArrayList<Colony> fromResultSetGroup(ResultSet rs, Scanner ip) throws SQLException {
+    public static ArrayList<Colony> fromResultSetGroup(DBConnect conn, Scanner ip) throws SQLException {
         ArrayList<Colony> colonies = new ArrayList<>();
+        String sql = "SELECT * FROM colony";
+
+        try(PreparedStatement ps = conn.getConnection().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery(sql);
+
 
             while (rs.next()) {
                 int cId = rs.getInt("colony_id");
@@ -43,9 +48,11 @@ public class Colony {
                 Colony c = new Colony(cId, mID, startDate, endDate, status, notes, ip);
                 colonies.add(c);
             }
-
+        }
         return colonies;
     }
+
+
 
     // method for gathering colony details from user
     public static Colony collectColonyDetails( Scanner ip, int mushroomTypeId) {

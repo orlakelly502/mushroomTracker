@@ -25,7 +25,7 @@ public class MushApp {
         this.conn = conn;
         this.types = MushroomType.getAllTypes(conn);
         this.client = new MushClient();
-        this. running = true;
+        this.running = true;
     }
 
 
@@ -109,7 +109,6 @@ public class MushApp {
     // into an object using GSON - maybe to many responsibilities in this function could do with splitting later
     public RawSensorData checkResponse(HttpResponse<String> response){
         String responseBody = response.body();
-        System.out.println(responseBody);
         if(responseBody.equals("503")){
             System.out.println("No Reading available");
             return null;
@@ -127,16 +126,17 @@ public class MushApp {
     public void pollAndPersistReadings() {
         // on launch check if there is a saved active colony from a previous session & restore it
         restoreActiveColony();
+        if(getActiveColony() == null) {
+            System.out.println("No Active Colony found: Please SET an active colony or CREATE a new one from the main menu.");
+        }
 
         // makes use of instance variable so it's status can be changed externally in main menu
         while(running){
 
                 try {
                     if(getActiveColony() == null){
-                        System.out.print("No Active Colony found: Please SET and active colony or CREATE a new one from the main menu.");
                         Thread.sleep(10000);
                         continue;
-
                     }
                     // sending the request for data and retrieving it's been handled
                     HttpResponse<String> response = client.sendRequest();
@@ -149,7 +149,6 @@ public class MushApp {
 
                     // writing new sensor record to the DB
                     newReading.rawSensorReadingToDb(conn.getConnection());
-                    System.out.println("Adding new Reading");
 
                     Thread.sleep(10000);
 
@@ -161,7 +160,6 @@ public class MushApp {
             }
         }
 
-
     public void printMainMenu(){
         System.out.println("""
                 Please make a selection from the menu below:
@@ -172,11 +170,22 @@ public class MushApp {
                 """);
     }
 
+    public void setColonies(ArrayList<Colony> colonies) {
+        this.colonies = colonies;
+    }
 
     // main application loop
     public void navigateMenu() {
         while (running) {
             printMainMenu();
+
+            //loading all pre-existing colonies from the DB on start
+            try{
+               this.colonies = Colony.fromResultSetGroup(conn, ip);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
 
             int usersChoice = ip.nextInt();
             // flush buffer without waiting for more input
