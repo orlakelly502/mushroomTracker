@@ -163,6 +163,8 @@ public class MushApp {
 
                 try {
                     if(getActiveColony() == null){
+                        // sleeping stops busy waiting where the CPU would spin as fast as possible running this loop
+                        // when without an active colony there is no need to
                         Thread.sleep(10000);
                         continue;
                     }
