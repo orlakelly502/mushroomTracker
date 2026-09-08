@@ -1,9 +1,10 @@
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import com.google.gson.Gson;
+
 
 // Collection Manager kinda?
 
@@ -85,8 +86,36 @@ public class MushApp {
 
     // allows users to select and active colony that sensor data belongs to - returns false if invalid id is entered
     public boolean setActiveColony(int id){
+        // checking if id entered is already the activeID
+        if(activeColony != null && activeColony.getColonyId() == id) {
+            return true;
+        }
         Colony col = findColonyById(id);
+        // checking colony actually exists before trying to fetch data relating to it.
+
         if(col != null){
+            String updateStatus = "UPDATE colony SET status = ? WHERE colony_id = ?";
+            // update newActive Colonies status on the dataBase
+            try(PreparedStatement ps = conn.getConnection().prepareStatement(updateStatus)){
+                ps.setString(1, "COLONISING");
+                ps.setInt(2,id);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            // check if there is an old active colony - if there isn't (lets say a fresh start) I can't run prepared
+            //statements on a null or else i will get exceptions.
+            if(activeColony != null) {
+                try (PreparedStatement ps = conn.getConnection().prepareStatement(updateStatus)) {
+                    ps.setString(1, "COMPLETED");
+                    ps.setInt(2, activeColony.getColonyId());
+                    ps.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // now i can update stored active colony that old one has been deactivated
             this.activeColony = col;
             return true;
         }else{
@@ -113,8 +142,7 @@ public class MushApp {
             System.out.println("No Reading available");
             return null;
         }else{
-            RawSensorData reading = gson.fromJson(response.body(), RawSensorData.class);
-            return reading;
+            return gson.fromJson(response.body(), RawSensorData.class);
         }
     }
 
@@ -170,10 +198,6 @@ public class MushApp {
                 """);
     }
 
-    public void setColonies(ArrayList<Colony> colonies) {
-        this.colonies = colonies;
-    }
-
     // main application loop
     public void navigateMenu() {
         while (running) {
@@ -192,9 +216,7 @@ public class MushApp {
             ip.nextLine();
 
             switch (usersChoice) {
-                case 1 -> {
-                    makeNewColony();
-                }
+                case 1 -> makeNewColony();
                 case 2 -> {
                     while (true) {
                         System.out.println("Please enter the ID of the Colony you wish to make Active");
