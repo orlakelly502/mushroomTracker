@@ -7,8 +7,10 @@ The main goal of creating this was to experiment with creating a connected syste
 - A Flask route listens for GET requests, responding to them with a JSONified version of the latest sensor reading.
 - Meanwhile a Java application utilising the HTTPClient library sends GET requests to the Pi & validates the returned data before writing it to the MySQL database - this happens automatically once an Active Colony has been created & set.
 - The Java application has a simple console based menu from which the user can SET an active colony (all sensor readings are associated with the current Active Colony via a FK link), CREATE a new colony, open the Grafana dashboard or exit the program.
+![Demo of MushroomTracker](mushmenu.png)
 - The Grafana visualisations are based on the current Active Colony only - changing the colour of humidity/temperature displays (red representing too high, blue too low & green healthy) to show whether they are in a healthy range.
 - Alerts have also been set up to fire via a Discord webhook if temperature or humidity fall out of a healthy range (with a restriction in frequency) so you don't have to be currently viewing the dashboard to be made aware of an environmental issue that could affect the overall health and growth of the colony.
+![Demo of MushroomTracker](Alerts.png)
 ## Limitations
 - Currently only works with a single active colony & sensor.
 - Grafana has manual thresholds and does not work from the min/max ranges located in the mushroomTypes table (these differ depending on the mushroom type being grown) - requires new different dashboards for each different type which is a bit unwieldy.
