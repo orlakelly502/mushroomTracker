@@ -1,7 +1,7 @@
 # MushroomTracker
 A mixed language project that collects live sensor data, writing it to a MySQL database & visualising it in a browser using Grafana. Allowing the easy tracking of key environmental metrics which can impact the yield & growth speed of mushrooms.
 The main goal of creating this was to experiment with creating a connected system.
-![Demo of MushroomTracker](demo.gif)
+![Demo of MushroomTracker](MushTrack.gif)
 ## How it Works
 - The sensor data is collected via a DHT sensor connected to Raspberry Pi. The Pi runs a Python script which collects the sensor data & translates it into primitive values using the Adafruit library.
 - A Flask route listens for GET requests, responding to them with a JSONified version of the latest sensor reading.
